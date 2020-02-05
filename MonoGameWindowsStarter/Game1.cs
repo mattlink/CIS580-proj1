@@ -16,11 +16,33 @@ namespace MonoGameWindowsStarter
 
         List<Droplet> droplets;
 
+        KeyboardState oldKeyState;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             droplets = new List<Droplet>();
+        }
+
+        private Droplet CreateRandomDroplet(int i)
+        {
+            var rand = new Random(i);
+            Color[] colors = { Color.Yellow, Color.Green, Color.Red, Color.Blue, Color.Orange, Color.DarkOrange, Color.DarkOliveGreen, Color.OliveDrab };
+
+            float randX = (float)rand.Next(this.graphics.PreferredBackBufferWidth);
+            float randY = (float)rand.Next(60);
+            float randSize = (float)rand.Next(15, 69);
+            //float randSpeed = rand.Next(1, 2);
+            //float randSpeed = 0.5f;
+            float randSpeed = (float)(rand.NextDouble()) * (1.2f - 0.3f) + 0.3f;
+            int randColor = rand.Next(colors.Length);
+
+            Droplet drop = new Droplet(randX, randY, randSize, randSpeed, colors[randColor], this);
+
+            drop.LoadContent(this.Content);
+
+            return drop;
         }
 
         /// <summary>
@@ -37,23 +59,11 @@ namespace MonoGameWindowsStarter
             graphics.ApplyChanges();
 
             // load in some random droplets
-            var rand = new Random();
             int numDroplets = 12;
-            Color[] colors = { Color.Yellow, Color.Green, Color.Red, Color.Blue, Color.Orange, Color.DarkOrange, Color.DarkOliveGreen, Color.OliveDrab };
-
+            
             for (int i = 0; i < numDroplets; i++)
             {
-                float randX = (float)rand.Next(this.graphics.PreferredBackBufferWidth);
-                float randY = (float)rand.Next(60);
-                float randSize = (float)rand.Next(15, 69);
-                //float randSpeed = rand.Next(1, 2);
-                //float randSpeed = 0.5f;
-                float randSpeed = (float)(rand.NextDouble()) * (1.2f - 0.3f) + 0.3f;
-                int randColor = rand.Next(colors.Length);
-
-                droplets.Add(
-                    new Droplet(randX, randY, randSize, randSpeed, colors[randColor], this)
-                );
+                droplets.Add(CreateRandomDroplet(i));
             }
 
 
@@ -95,7 +105,27 @@ namespace MonoGameWindowsStarter
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            // TODO: If user presses spacebar: add another random droplet
+            // TODO: If user presses backspace: delete a random droplet
+
+            KeyboardState keyState = Keyboard.GetState();
+
+            if (keyState.IsKeyDown(Keys.Space) && !oldKeyState.IsKeyDown(Keys.Space))
+            {
+                // add a new random droplet
+                droplets.Add(CreateRandomDroplet((new Random()).Next()));
+            }
+
+            if (keyState.IsKeyDown(Keys.Delete) && !oldKeyState.IsKeyDown(Keys.Delete))
+            {
+                // remove a random droplet
+                if (droplets.Count > 0)
+                {
+                    droplets.Remove(droplets[(new Random()).Next(droplets.Count)]);
+                }
+                
+            }
+
             foreach(Droplet d in this.droplets)
             {
                 d.Update(gameTime);
