@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
+using System;
 
 namespace MonoGameWindowsStarter
 {
@@ -12,10 +14,13 @@ namespace MonoGameWindowsStarter
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        List<Droplet> droplets;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            droplets = new List<Droplet>();
         }
 
         /// <summary>
@@ -31,6 +36,27 @@ namespace MonoGameWindowsStarter
             graphics.PreferredBackBufferHeight = 768;
             graphics.ApplyChanges();
 
+            // load in some random droplets
+            var rand = new Random();
+            int numDroplets = 12;
+            Color[] colors = { Color.Yellow, Color.Green, Color.Red, Color.Blue, Color.Orange, Color.DarkOrange, Color.DarkOliveGreen, Color.OliveDrab };
+
+            for (int i = 0; i < numDroplets; i++)
+            {
+                float randX = (float)rand.Next(this.graphics.PreferredBackBufferWidth);
+                float randY = (float)rand.Next(60);
+                float randSize = (float)rand.Next(15, 69);
+                //float randSpeed = rand.Next(1, 2);
+                //float randSpeed = 0.5f;
+                float randSpeed = (float)(rand.NextDouble()) * (1.2f - 0.3f) + 0.3f;
+                int randColor = rand.Next(colors.Length);
+
+                droplets.Add(
+                    new Droplet(randX, randY, randSize, randSpeed, colors[randColor], this)
+                );
+            }
+
+
             base.Initialize();
         }
 
@@ -44,6 +70,10 @@ namespace MonoGameWindowsStarter
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            foreach (Droplet d in this.droplets)
+            {
+                d.LoadContent(this.Content);
+            }
         }
 
         /// <summary>
@@ -66,6 +96,10 @@ namespace MonoGameWindowsStarter
                 Exit();
 
             // TODO: Add your update logic here
+            foreach(Droplet d in this.droplets)
+            {
+                d.Update(gameTime);
+            }
 
             base.Update(gameTime);
         }
@@ -79,6 +113,10 @@ namespace MonoGameWindowsStarter
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            foreach (Droplet d in this.droplets)
+            {
+                d.Draw(this.spriteBatch);
+            }
 
             base.Draw(gameTime);
         }
