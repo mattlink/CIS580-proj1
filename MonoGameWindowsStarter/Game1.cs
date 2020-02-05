@@ -28,11 +28,13 @@ namespace MonoGameWindowsStarter
         private Droplet CreateRandomDroplet(int i)
         {
             var rand = new Random(i);
-            Color[] colors = { Color.Yellow, Color.Green, Color.Red, Color.Blue, Color.Orange, Color.DarkOrange, Color.DarkOliveGreen, Color.OliveDrab };
+            //Color[] colors = { Color.DarkGoldenrod, Color.SandyBrown, Color.Sienna, Color.DarkRed, Color.Green, Color.DarkSalmon, Color.Blue, Color.Orange, Color.DarkOrange, Color.DarkOliveGreen, Color.OliveDrab };
+
+            Color[] colors = { Color.Sienna };
 
             float randX = (float)rand.Next(this.graphics.PreferredBackBufferWidth);
             float randY = (float)rand.Next(60);
-            float randSize = (float)rand.Next(15, 69);
+            float randSize = (float)rand.Next(15, 80);
             //float randSpeed = rand.Next(1, 2);
             //float randSpeed = 0.5f;
             float randSpeed = (float)(rand.NextDouble()) * (1.2f - 0.3f) + 0.3f;
@@ -59,7 +61,7 @@ namespace MonoGameWindowsStarter
             graphics.ApplyChanges();
 
             // load in some random droplets
-            int numDroplets = 12;
+            int numDroplets = 20;
             
             for (int i = 0; i < numDroplets; i++)
             {
