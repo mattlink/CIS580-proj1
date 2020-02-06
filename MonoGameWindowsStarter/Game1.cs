@@ -25,22 +25,25 @@ namespace MonoGameWindowsStarter
             droplets = new List<Droplet>();
         }
 
-        private Droplet CreateRandomDroplet(int i)
+        private Droplet CreateRandomDroplet(Random rand)
         {
-            var rand = new Random(i);
-            //Color[] colors = { Color.DarkGoldenrod, Color.SandyBrown, Color.Sienna, Color.DarkRed, Color.Green, Color.DarkSalmon, Color.Blue, Color.Orange, Color.DarkOrange, Color.DarkOliveGreen, Color.OliveDrab };
+            //var rand = new Random();
+            Color[] colors = { Color.DarkSlateBlue, Color.MidnightBlue, Color.DarkBlue, Color.DarkRed, Color.DarkSeaGreen, Color.ForestGreen, Color.DarkBlue, Color.DarkOliveGreen, Color.OliveDrab };
 
-            Color[] colors = { Color.Sienna };
+            //Color[] colors = { Color.Sienna };
 
-            float randX = (float)rand.Next(this.graphics.PreferredBackBufferWidth);
-            float randY = (float)rand.Next(60);
+            float randX = (float)rand.Next(this.GraphicsDevice.Viewport.Width);
+            Console.WriteLine(randX);
+            Console.WriteLine(this.GraphicsDevice.Viewport.Width);
+            Console.WriteLine(this.graphics.PreferredBackBufferWidth);
+            float randY = (float)rand.Next(this.GraphicsDevice.Viewport.Height / 2);
             float randSize = (float)rand.Next(15, 80);
             //float randSpeed = rand.Next(1, 2);
             //float randSpeed = 0.5f;
             float randSpeed = (float)(rand.NextDouble()) * (1.2f - 0.3f) + 0.3f;
             int randColor = rand.Next(colors.Length);
 
-            Droplet drop = new Droplet(randX, randY, randSize, randSpeed, colors[randColor], this);
+            Droplet drop = new Droplet(randX, randY, randSize, randSpeed * 0.5f, colors[randColor], this);
 
             drop.LoadContent(this.Content);
 
@@ -60,12 +63,14 @@ namespace MonoGameWindowsStarter
             graphics.PreferredBackBufferHeight = 768;
             graphics.ApplyChanges();
 
+           
             // load in some random droplets
-            int numDroplets = 20;
+            int numDroplets = 4;
+            Random rand = new Random();
             
             for (int i = 0; i < numDroplets; i++)
             {
-                droplets.Add(CreateRandomDroplet(i));
+                droplets.Add(CreateRandomDroplet(rand));
             }
 
 
@@ -80,6 +85,9 @@ namespace MonoGameWindowsStarter
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+           
+
 
             // TODO: use this.Content to load your game content here
             foreach (Droplet d in this.droplets)
@@ -115,7 +123,8 @@ namespace MonoGameWindowsStarter
             if (keyState.IsKeyDown(Keys.Space) && !oldKeyState.IsKeyDown(Keys.Space))
             {
                 // add a new random droplet
-                droplets.Add(CreateRandomDroplet((new Random()).Next()));
+                //droplets.Add(CreateRandomDroplet((new Random()).Next()));
+                droplets.Add(CreateRandomDroplet(new Random()));
             }
 
             if (keyState.IsKeyDown(Keys.Delete) && !oldKeyState.IsKeyDown(Keys.Delete))
@@ -130,7 +139,7 @@ namespace MonoGameWindowsStarter
 
             foreach(Droplet d in this.droplets)
             {
-                d.Update(gameTime);
+                d.Update(gameTime, this.droplets);
             }
 
             base.Update(gameTime);
@@ -142,7 +151,7 @@ namespace MonoGameWindowsStarter
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            this.GraphicsDevice.Clear(Color.FloralWhite);
 
             // TODO: Add your drawing code here
             foreach (Droplet d in this.droplets)

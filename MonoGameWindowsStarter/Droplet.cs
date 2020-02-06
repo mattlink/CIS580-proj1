@@ -40,7 +40,7 @@ namespace MonoGameWindowsStarter
             texture = cm.Load<Texture2D>("pixel");
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, List<Droplet> allDroplets)
         {
             //KeyboardState keyState = Keyboard.GetState();
 
@@ -57,6 +57,29 @@ namespace MonoGameWindowsStarter
                 this.speed *= -1;
             }
 
+            // check collisions with the other droplets
+            foreach(Droplet d in allDroplets)
+            {
+                //if (this == d) continue;
+                if (this.CollidesWith(d))
+                {
+                    // change this guys direction
+                    this.speed *= -1;
+                    // change d's direction
+                    d.speed *= -1;
+
+                    /*var delta = (this.bounds.X + this.bounds.Width) - (d.bounds.X - d.bounds.Width);
+
+                    if (this.speed > 0) this.speed += 2 * delta;
+                    if (this.speed < 0) this.speed -= 2 * delta;
+
+                    if (d.speed > 0) d.speed += 2 * delta;
+                    if (d.speed < 0) d.speed -= 2 * delta;*/
+
+                    //d.speed += 2 * delta;
+                }
+            }
+
         }
 
         public void Draw(SpriteBatch sb)
@@ -67,6 +90,21 @@ namespace MonoGameWindowsStarter
             sb.Draw(this.texture, this.bounds, this.color);
 
             sb.End();
+        }
+
+        public bool CollidesWith(Droplet b)
+        {
+           if (
+                ((b.bounds.X > this.bounds.X && b.bounds.X < this.bounds.X + this.bounds.Width) ||
+                (b.bounds.X + b.bounds.Width > this.bounds.X && b.bounds.X + b.bounds.Width < this.bounds.X + this.bounds.Width))  
+                &&
+                ((this.bounds.Y + this.bounds.Height > b.bounds.Y && this.bounds.Y + this.bounds.Height < b.bounds.Y + b.bounds.Height) ||
+                (this.bounds.Y < b.bounds.Y + b.bounds.Height && this.bounds.Y > b.bounds.Y))) {
+
+                return true;
+            }
+            return false;
+               
         }
 
     }
