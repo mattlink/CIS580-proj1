@@ -13,16 +13,21 @@ namespace MonoGameWindowsStarter
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        SpriteFont spriteFont;
 
         List<Droplet> droplets;
+        Player player;
 
         KeyboardState oldKeyState;
+
+        public int dropletsSwallowed = 0;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             droplets = new List<Droplet>();
+            player = new Player(12, 12, 50, 5, this);
         }
 
         private Droplet CreateRandomDroplet(Random rand)
@@ -37,7 +42,7 @@ namespace MonoGameWindowsStarter
             Console.WriteLine(this.GraphicsDevice.Viewport.Width);
             Console.WriteLine(this.graphics.PreferredBackBufferWidth);
             float randY = (float)rand.Next(this.GraphicsDevice.Viewport.Height / 2);
-            float randSize = (float)rand.Next(15, 80);
+            float randSize = (float)rand.Next(15, 30);
             //float randSpeed = rand.Next(1, 2);
             //float randSpeed = 0.5f;
             float randSpeed = (float)(rand.NextDouble()) * (1.2f - 0.3f) + 0.3f;
@@ -48,6 +53,11 @@ namespace MonoGameWindowsStarter
             drop.LoadContent(this.Content);
 
             return drop;
+        }
+
+        public void RemoveDroplet(Droplet d)
+        {
+            this.droplets.Remove(d);
         }
 
         /// <summary>
@@ -85,9 +95,9 @@ namespace MonoGameWindowsStarter
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteFont = Content.Load<SpriteFont>("defaultFont");
 
-           
-
+            player.LoadContent(Content);
 
             // TODO: use this.Content to load your game content here
             foreach (Droplet d in this.droplets)
@@ -137,10 +147,14 @@ namespace MonoGameWindowsStarter
                 
             }
 
+           
+
             foreach(Droplet d in this.droplets)
             {
                 d.Update(gameTime, this.droplets);
             }
+
+            player.Update(gameTime, this.droplets);
 
             base.Update(gameTime);
         }
@@ -152,6 +166,17 @@ namespace MonoGameWindowsStarter
         protected override void Draw(GameTime gameTime)
         {
             this.GraphicsDevice.Clear(Color.FloralWhite);
+
+            spriteBatch.Begin();
+            spriteBatch.DrawString(
+                spriteFont,
+                "Droplets Consumed: " + this.dropletsSwallowed,
+                new Vector2(50, 50),
+                Color.Black
+                );
+            spriteBatch.End();
+
+            player.Draw(this.spriteBatch);
 
             // TODO: Add your drawing code here
             foreach (Droplet d in this.droplets)

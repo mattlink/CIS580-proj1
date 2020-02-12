@@ -14,12 +14,12 @@ namespace MonoGameWindowsStarter
      * We shall spawn in many droplets of varying radii and colors to fall from the sky
      * Avoid red ones, catch green ones?
      * */
-    class Droplet
+    public class Droplet
     {
 
         Game1 game;
         Texture2D texture;
-        BoundingRectangle bounds;
+        public BoundingRectangle bounds;
 
         float speed;
         Color color;

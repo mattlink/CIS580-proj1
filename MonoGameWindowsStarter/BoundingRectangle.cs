@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace MonoGameWindowsStarter
 {
-    class BoundingRectangle
+    public class BoundingRectangle
     {
         public float X;
         public float Y;
