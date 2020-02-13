@@ -27,7 +27,7 @@ namespace MonoGameWindowsStarter
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             droplets = new List<Droplet>();
-            player = new Player(12, 12, 50, 5, this);
+            player = new Player(12, 12, 32, 5, this);
         }
 
         private Droplet CreateRandomDroplet(Random rand)

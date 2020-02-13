@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
@@ -24,7 +25,16 @@ namespace MonoGameWindowsStarter
 
         float speed;
 
+        const int FRAME_WIDTH = 32;
+        const int FRAME_HEIGHT = 32;
+        const int ANIMATION_FRAME_RATE = 124;
+        int frame = 0;
+
         PlayerState pState = PlayerState.Up;
+        SoundEffect eatSFX;
+
+
+        TimeSpan timer;
 
         //KeyboardState oldKeyState;
 
@@ -33,19 +43,22 @@ namespace MonoGameWindowsStarter
             this.game = game;
             this.bounds = new BoundingRectangle(x, y, r, r);
             this.speed = speed;
+            this.timer = new TimeSpan(0);
         }
 
         private float StateToFloat (PlayerState ps)
         {
-            if (ps == PlayerState.Up) return -90.0f;
-            if (ps == PlayerState.Down) return 90.0f;
-            if (ps == PlayerState.Right) return 180.0f;
+            if (ps == PlayerState.Up) return (float)(Math.PI * 3) / 2.0f;
+            if (ps == PlayerState.Down) return (float)(Math.PI / 2f);
+            if (ps == PlayerState.Left) return (float)Math.PI;
             return 0.0f;
         }
 
         public void LoadContent(ContentManager cm)
         {
-            this.texture = cm.Load<Texture2D>("pixel");
+            this.texture = cm.Load<Texture2D>("pac2_sheet");
+            //this.texture = cm.Load<Texture2D>("pac");
+            this.eatSFX = cm.Load<SoundEffect>("coin_pickup");
         }
 
         public void Update(GameTime gameTime, List<Droplet> droplets)
@@ -95,15 +108,38 @@ namespace MonoGameWindowsStarter
 
             foreach (Droplet d in toRemove)
             {
+                this.eatSFX.Play();
                 this.game.RemoveDroplet(d);
             }
+
+
+            timer += gameTime.ElapsedGameTime;
+
+            while (timer.TotalMilliseconds > ANIMATION_FRAME_RATE)
+            {
+                frame++;
+                timer -= new TimeSpan(0, 0, 0, 0, ANIMATION_FRAME_RATE);
+            }
+
+            frame %= 6;
+
+            Console.WriteLine(frame);
         }
 
         public void Draw(SpriteBatch sb)
         {
-            var origin = new Vector2(texture.Width / 2f, texture.Height / 2f);
+            var source = new Rectangle(
+                frame * FRAME_WIDTH,
+                0,
+                FRAME_WIDTH,
+                FRAME_HEIGHT
+                );
+            var origin = new Vector2(32 / 2f, 32 / 2f);
             sb.Begin();
-            sb.Draw(this.texture, this.bounds, null, Color.DarkOrange, StateToFloat(this.pState), origin, SpriteEffects.None, 0f);
+            sb.Draw(this.texture, this.bounds, source, Color.White, StateToFloat(this.pState), origin, SpriteEffects.None, 0f);
+
+            //sb.Draw(texture, this.bounds, source, Color.White);
+            //sb.Draw(this.texture, null, this.bounds, source, origin, StateToFloat(this.pState), new Vector2(2f, 2f), Color.White, SpriteEffects.None, 0f);
             sb.End();
         }
 
