@@ -27,7 +27,7 @@ namespace MonoGameWindowsStarter
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             droplets = new List<Droplet>();
-            player = new Player(12, 12, 32, 5, this);
+            player = new Player(25, 25, 32, 5, this);
         }
 
         private Droplet CreateRandomDroplet(Random rand)
@@ -75,7 +75,7 @@ namespace MonoGameWindowsStarter
 
            
             // load in some random droplets
-            int numDroplets = 4;
+            int numDroplets = 20; // start with this many droplets on screen
             Random rand = new Random();
             
             for (int i = 0; i < numDroplets; i++)
